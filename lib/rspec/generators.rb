@@ -77,6 +77,12 @@ module RSpec
         end
       end
 
+      refine RSpec::Matchers::BuiltIn::BeAnInstanceOf do
+        def _generator
+          CLASS_GENS.fetch(expected)
+        end
+      end
+
       refine RSpec::Matchers::BuiltIn::All do
         def _generator
           Radagen.array(matcher.generator)
@@ -96,6 +102,24 @@ module RSpec
       refine RSpec::Matchers::BuiltIn::BeComparedTo do
         def _generator
           CLASS_GENS.fetch(expected.class)
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::BeBetween do
+        def _generator
+          Radagen.choose(@min, @max)
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::BeFalsey do
+        def _generator
+          Radagen.one_of(Radagen.return(false), Radagen.return(nil))
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::BeTruthy do
+        def _generator
+          Radagen.such_that(Radagen.simple_printable, &:itself)
         end
       end
 

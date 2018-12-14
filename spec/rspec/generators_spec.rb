@@ -66,6 +66,10 @@ RSpec.describe RSpec::Generators do
     it_behaves_like "kind_of", :a_kind_of
   end
 
+  describe "be_instance_of" do
+    it_behaves_like "kind_of", :be_instance_of
+  end
+
   describe "all" do
     it "generates an array of values satisfying matcher" do
       expect(all(be_a_kind_of(Integer))).to generate
@@ -98,6 +102,24 @@ RSpec.describe RSpec::Generators do
     end
   end
 
+  describe "be_between" do
+    it "generates integers between the given values" do
+      expect(be_between(1, 10)).to generate
+    end
+  end
+
+  describe "be_falsey" do
+    it "generates false or nil" do
+      expect(be_falsey).to generate
+    end
+  end
+
+  describe "be_truthy" do
+    it "generates anything but false or nil" do
+      expect(be_truthy).to generate
+    end
+  end
+
   describe "custom generator" do
     it "overrides a matcher's generator" do
       negative_integer = RSpec::Generators.with_generator(be < 0, Radagen.fixnum_neg)
@@ -105,4 +127,51 @@ RSpec.describe RSpec::Generators do
       expect(all(negative_integer)).to generate
     end
   end
+
+  # TODO:
+  #
+  # ```
+  # autoload :BeNil,                   'rspec/matchers/built_in/be'
+  # autoload :BePredicate,             'rspec/matchers/built_in/be'
+  # autoload :BeTruthy,                'rspec/matchers/built_in/be'
+  # autoload :BeWithin,                'rspec/matchers/built_in/be_within'
+  # autoload :Change,                  'rspec/matchers/built_in/change'
+  # autoload :ContainExactly,          'rspec/matchers/built_in/contain_exactly'
+  # autoload :Cover,                   'rspec/matchers/built_in/cover'
+  # autoload :EndWith,                 'rspec/matchers/built_in/start_or_end_with'
+  # autoload :Eql,                     'rspec/matchers/built_in/eql'
+  # autoload :Exist,                   'rspec/matchers/built_in/exist'
+  # autoload :Has,                     'rspec/matchers/built_in/has'
+  # autoload :HaveAttributes,          'rspec/matchers/built_in/have_attributes'
+  # autoload :Match,                   'rspec/matchers/built_in/match'
+  # autoload :NegativeOperatorMatcher, 'rspec/matchers/built_in/operators'
+  # autoload :OperatorMatcher,         'rspec/matchers/built_in/operators'
+  # autoload :Output,                  'rspec/matchers/built_in/output'
+  # autoload :PositiveOperatorMatcher, 'rspec/matchers/built_in/operators'
+  # autoload :RaiseError,              'rspec/matchers/built_in/raise_error'
+  # autoload :RespondTo,               'rspec/matchers/built_in/respond_to'
+  # autoload :Satisfy,                 'rspec/matchers/built_in/satisfy'
+  # autoload :StartWith,               'rspec/matchers/built_in/start_or_end_with'
+  # autoload :ThrowSymbol,             'rspec/matchers/built_in/throw_symbol'
+  # autoload :YieldControl,            'rspec/matchers/built_in/yield'
+  # autoload :YieldSuccessiveArgs,     'rspec/matchers/built_in/yield'
+  # autoload :YieldWithArgs,           'rspec/matchers/built_in/yield'
+  # autoload :YieldWithNoArgs,         'rspec/matchers/built_in/yield'
+  # ```
+  #
+  # DONE:
+  #
+  # ```
+  # autoload :Eq,                      'rspec/matchers/built_in/eq'
+  # autoload :Equal,                   'rspec/matchers/built_in/equal'
+  # autoload :Compound,                'rspec/matchers/built_in/compound'
+  # autoload :BeAKindOf,               'rspec/matchers/built_in/be_kind_of'
+  # autoload :All,                     'rspec/matchers/built_in/all'
+  # autoload :Include,                 'rspec/matchers/built_in/include'
+  # autoload :BeComparedTo,            'rspec/matchers/built_in/be'
+  # autoload :BeAnInstanceOf,          'rspec/matchers/built_in/be_instance_of'
+  # autoload :BeBetween,               'rspec/matchers/built_in/be_between'
+  # autoload :Be,                      'rspec/matchers/built_in/be'
+  # autoload :BeFalsey,                'rspec/matchers/built_in/be'
+  # ```
 end
