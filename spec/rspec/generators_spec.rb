@@ -126,6 +126,14 @@ RSpec.describe RSpec::Generators do
     end
   end
 
+  describe "be_within" do
+    it "generates a number within boundaries" do
+      expect(be_within(2).of(1)).to generate
+      expect(be_within(0.1).of(1.1)).to generate
+      expect(be_within(10).percent_of(20)).to generate
+    end
+  end
+
   describe "custom generator" do
     it "overrides a matcher's generator" do
       negative_integer = RSpec::Generators.with_generator(be < 0, Radagen.fixnum_neg)
@@ -134,11 +142,15 @@ RSpec.describe RSpec::Generators do
     end
   end
 
+  describe "unsupported matchers" do
+    it "raises a NotImplemented error" do
+      expect { gen(be_positive) }.to raise_error(NotImplementedError)
+    end
+  end
+
   # TODO:
   #
   # ```
-  # autoload :BePredicate,             'rspec/matchers/built_in/be'
-  # autoload :BeTruthy,                'rspec/matchers/built_in/be'
   # autoload :BeWithin,                'rspec/matchers/built_in/be_within'
   # autoload :Change,                  'rspec/matchers/built_in/change'
   # autoload :ContainExactly,          'rspec/matchers/built_in/contain_exactly'

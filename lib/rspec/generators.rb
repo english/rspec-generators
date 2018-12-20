@@ -47,6 +47,12 @@ module RSpec
         end
       end
 
+      refine RSpec::Matchers::BuiltIn::BaseMatcher do
+        def _generator
+          raise NotImplementedError
+        end
+      end
+
       refine RSpec::Matchers::BuiltIn::Eq do
         def _generator
           Radagen.fmap(Radagen.return(expected), &:clone)
