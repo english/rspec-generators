@@ -120,6 +120,12 @@ RSpec.describe RSpec::Generators do
     end
   end
 
+  describe "be_nil" do
+    it "generates nil" do
+      expect(be_nil).to generate
+    end
+  end
+
   describe "custom generator" do
     it "overrides a matcher's generator" do
       negative_integer = RSpec::Generators.with_generator(be < 0, Radagen.fixnum_neg)
@@ -131,7 +137,6 @@ RSpec.describe RSpec::Generators do
   # TODO:
   #
   # ```
-  # autoload :BeNil,                   'rspec/matchers/built_in/be'
   # autoload :BePredicate,             'rspec/matchers/built_in/be'
   # autoload :BeTruthy,                'rspec/matchers/built_in/be'
   # autoload :BeWithin,                'rspec/matchers/built_in/be_within'

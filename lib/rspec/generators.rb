@@ -123,6 +123,12 @@ module RSpec
         end
       end
 
+      refine RSpec::Matchers::BuiltIn::BeNil do
+        def _generator
+          Radagen.return(nil)
+        end
+      end
+
       refine RSpec::Matchers::AliasedMatcher do
         def _generator
           base_matcher.generator
