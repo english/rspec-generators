@@ -5,7 +5,7 @@ require "set"
 
 module RSpec
   module Generators
-    using Module.new {
+    module Refinements
       CLASS_GENS = {
         Integer  => Radagen.fixnum,
         String   => Radagen.string,
@@ -37,13 +37,7 @@ module RSpec
 
       refine Array do
         def _generator
-          Radagen.tuple(*self.map(&:generator))
-        end
-      end
-
-      refine Set do
-        def _generator
-          Radagen.tuple(*self.map(&:generator)).fmap { |array| Set.new(array) }
+          Radagen.tuple(*map { |x| x.generator })
         end
       end
 
@@ -54,6 +48,12 @@ module RSpec
       end
 
       refine RSpec::Matchers::BuiltIn::Eq do
+        def _generator
+          Radagen.fmap(Radagen.return(expected), &:clone)
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::Eql do
         def _generator
           Radagen.fmap(Radagen.return(expected), &:clone)
         end
@@ -100,7 +100,7 @@ module RSpec
           if expecteds.count == 1 && Hash === expecteds.first
             expecteds.first.generator
           else
-            Radagen.tuple(*expecteds.map(&:generator))
+            Radagen.tuple(*expecteds.map { |x| x.generator })
           end
         end
       end
@@ -135,12 +135,118 @@ module RSpec
         end
       end
 
+      refine RSpec::Matchers::BuiltIn::BeWithin do
+        def _generator
+          Radagen.choose(@expected - @tolerance, @expected + @tolerance)
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::ContainExactly do
+        def _generator
+          Radagen.bind(expected.generator) { |coll| Radagen.shuffle(coll) }
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::Cover do
+        def _generator
+          Radagen.return(@expected.min..@expected.max)
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::EndWith do
+        def _generator
+          Radagen.fmap(CLASS_GENS.fetch(expected.class)) { |genned| genned + expected }
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::StartWith do
+        def _generator
+          Radagen.fmap(CLASS_GENS.fetch(expected.class)) { |genned| expected + genned }
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::HaveAttributes do
+        def _generator
+          Radagen.fmap(expected.generator) { |hash|
+            hash.each_with_object(Object.new) do |(method_name, return_value), object|
+              object.define_singleton_method(method_name) { return_value }
+            end
+          }
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::Match do
+        def _generator
+          case expected
+          when Regexp
+            raise ArgumentError, "cannot generate string from regex"
+          when String
+            Radagen.return(Regexp.new(expected))
+          else
+            expected.generator
+          end
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::RespondTo do
+        def _generator
+          if @expected_arity || @expected_keywords.any? || @unlimited_arguments || @arbitrary_keywords
+            raise ArgumentError, "can't generate methods with specific arities"
+          end
+
+          return_values_generators = Radagen.array(Radagen.simple_printable, :count => @names.count)
+          Radagen.fmap(return_values_generators) { |return_values|
+            @names.zip(return_values).each_with_object(Object.new) do |(method_name, return_value), object|
+              object.define_singleton_method(method_name) { return_value }
+            end
+          }
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::Output do
+        def _generator
+          value_generator = expected ? expected.generator : Radagen.string
+
+          Radagen.fmap(value_generator) { |val|
+            -> {
+              io = @stream_capturer.name == "stdout" ? $stdout : $stderr
+              io.print(val)
+            }
+          }
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::RaiseError do
+        def _generator
+          error_class = @expected_error || RuntimeError
+          error_message_generator = Radagen.return(@expected_message) || Radagen.simple_printable
+
+          Radagen.fmap(error_message_generator) { |error_message|
+            -> { raise error_class, error_message }
+          }
+        end
+      end
+
+      refine RSpec::Matchers::BuiltIn::ThrowSymbol do
+        def _generator
+          Radagen.return(-> {
+            if @expected_arg
+              throw @expected_symbol, @expected_arg
+            else
+              throw @expected_symbol
+            end
+          })
+        end
+      end
+
       refine RSpec::Matchers::AliasedMatcher do
         def _generator
           base_matcher.generator
         end
       end
-    }
+    end
+
+    using Refinements
 
     def self.generator(matcher)
       Radagen.such_that(matcher.generator) { |genned| matcher === genned }
