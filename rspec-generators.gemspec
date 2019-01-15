@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Jamie English"]
   spec.email         = ["jamienglish@gmail.com"]
 
-  spec.summary       = %q{adds generators for RSpec built-in matchers}
+  spec.summary       = %q{Adds generators for RSpec built-in matchers}
   spec.homepage      = "https://github.com/english/rspec-generators"
   spec.license       = "MIT"
 
@@ -22,11 +22,13 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "rspec-expectations", "~> 3.5"
   spec.add_dependency "radagen", "~> 0.3.6"
 
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency "appraisal", "~> 2.2.0"
   spec.add_development_dependency "pry", "~> 0.12.2"
   spec.add_development_dependency "pry-byebug", "~> 3.6.0"
+  spec.add_development_dependency "rspec", "~> 3.5"
 end
