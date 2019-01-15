@@ -3,9 +3,9 @@ sudo: false
 language: ruby
 cache: bundler
 gemfile:
-  - gemfiles/3.5.0.gemfile
-  - gemfiles/3.6.0.gemfile
-  - gemfiles/3.7.0.gemfile
+  - gemfiles/rspec_3.5.0.gemfile
+  - gemfiles/rspec_3.6.0.gemfile
+  - gemfiles/rspec_3.7.0.gemfile
 rvm:
   - 2.5.0
   - 2.4.0
