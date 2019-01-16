@@ -6,17 +6,6 @@ require "set"
 module RSpec
   module Generators
     module Refinements
-      CLASS_GENS = {
-        Integer  => Radagen.fixnum,
-        String   => Radagen.string,
-        Float    => Radagen.float,
-        Symbol   => Radagen.symbol,
-        Array    => Radagen.array(Radagen.simple_type),
-        Set      => Radagen.set(Radagen.simple_type),
-        Hash     => Radagen.hash_map(Radagen.simple_type, Radagen.simple_type),
-        Rational => Radagen.rational,
-      }
-
       refine Object do
         attr_accessor :rspec_generators_generator
 
@@ -26,6 +15,54 @@ module RSpec
 
         def _generator
           Radagen.return(self)
+        end
+      end
+
+      refine Integer.singleton_class do
+        def _generator
+          Radagen.fixnum
+        end
+      end
+
+      refine String.singleton_class do
+        def _generator
+          Radagen.string
+        end
+      end
+
+      refine Float.singleton_class do
+        def _generator
+          Radagen.float
+        end
+      end
+
+      refine Symbol.singleton_class do
+        def _generator
+          Radagen.symbol
+        end
+      end
+
+      refine Array.singleton_class do
+        def _generator
+          Radagen.array(Radagen.simple_type)
+        end
+      end
+
+      refine Set.singleton_class do
+        def _generator
+          Radagen.set(Radagen.simple_type)
+        end
+      end
+
+      refine Hash.singleton_class do
+        def _generator
+          Radagen.hash_map(Radagen.simple_type, Radagen.simple_type)
+        end
+      end
+
+      refine Rational.singleton_class do
+        def _generator
+          Radagen.rational
         end
       end
 
@@ -79,13 +116,13 @@ module RSpec
 
       refine RSpec::Matchers::BuiltIn::BeAKindOf do
         def _generator
-          CLASS_GENS.fetch(expected)
+          expected.generator
         end
       end
 
       refine RSpec::Matchers::BuiltIn::BeAnInstanceOf do
         def _generator
-          CLASS_GENS.fetch(expected)
+          expected.generator
         end
       end
 
@@ -107,7 +144,7 @@ module RSpec
 
       refine RSpec::Matchers::BuiltIn::BeComparedTo do
         def _generator
-          CLASS_GENS.fetch(expected.class)
+          expected.class.generator
         end
       end
 
@@ -155,13 +192,13 @@ module RSpec
 
       refine RSpec::Matchers::BuiltIn::EndWith do
         def _generator
-          Radagen.fmap(CLASS_GENS.fetch(expected.class)) { |genned| genned + expected }
+          Radagen.fmap(expected.class.generator) { |genned| genned + expected }
         end
       end
 
       refine RSpec::Matchers::BuiltIn::StartWith do
         def _generator
-          Radagen.fmap(CLASS_GENS.fetch(expected.class)) { |genned| expected + genned }
+          Radagen.fmap(expected.class.generator) { |genned| expected + genned }
         end
       end
 
