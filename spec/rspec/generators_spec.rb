@@ -65,7 +65,6 @@ RSpec.describe RSpec::Generators do
 
   shared_examples "kind_of" do |matcher|
     it "generates core types" do
-      expect(send(matcher, Integer)).to generate
       expect(send(matcher, String)).to generate
       expect(send(matcher, Float)).to generate
       expect(send(matcher, Symbol)).to generate
@@ -86,6 +85,10 @@ RSpec.describe RSpec::Generators do
 
   describe "be_instance_of" do
     it_behaves_like "kind_of", :be_instance_of
+
+    it "generates integers, but maybe they're an_instance_of(Fixnum)" do
+      expect(a_kind_of(Integer)).to generate
+    end
   end
 
   describe "be_between" do
