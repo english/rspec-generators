@@ -29,6 +29,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "appraisal", "~> 2.2.0"
   spec.add_development_dependency "pry", "~> 0.12.2"
-  spec.add_development_dependency "pry-byebug", "~> 3.6.0"
+  spec.add_development_dependency "pry-byebug", "~> 3.6.0" if RUBY_ENGINE == "ruby"
   spec.add_development_dependency "rspec", "~> 3.5"
 end
