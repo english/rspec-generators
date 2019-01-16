@@ -86,7 +86,11 @@ module RSpec
 
       refine RSpec::Matchers::BuiltIn::Eq do
         def _generator
-          Radagen.fmap(Radagen.return(expected), &:clone)
+          Radagen.fmap(Radagen.return(expected)) do |genned|
+            Numeric === genned ?
+              genned :
+              genned.clone
+          end
         end
       end
 
