@@ -7,7 +7,13 @@ module RSpec
   module Generators
     module Refinements
       refine Object do
-        attr_accessor :rspec_generators_generator
+        def rspec_generators_generator=(generator)
+          @rspec_generators_generator = generator
+        end
+
+        def rspec_generators_generator
+          @rspec_generators_generator
+        end
 
         def generator
           rspec_generators_generator || _generator
