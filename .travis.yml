@@ -12,5 +12,5 @@ rvm:
   - 2.3.0
   - truffleruby
 before_install:
-  - gem update --system
+  - gem update --system 2.6.14.1
   - gem install bundler
