@@ -11,6 +11,7 @@ rvm:
   - 2.4.0
   - 2.3.0
   - truffleruby
+  - jruby-head
 before_install:
   - gem uninstall -i $(rvm gemdir)@global -ax bundler || true
   - gem update --system
